@@ -1,13 +1,55 @@
+/* tslint:disable:max-line-length */
+/* tslint:disable:quotemark */
+
 {{>licenseInfo}}
 {{#models}}
 {{#model}}
-import * as models from './models';
+/* tslint:disable:interface-name */
+/* tslint:disable:no-unused-variable */
+import * as models from "./models";
 
 {{#description}}
 /**
  * {{{description}}}
  */
 {{/description}}
-{{#isEnum}}{{>modelEnum}}{{/isEnum}}{{^isEnum}}{{>modelGeneric}}{{/isEnum}}
+{{#isEnum}} export enum {{{classname}}} {
+{{#allowableValues}}
+    {{#enumVars}}
+    {{{name}}} = <any> {{{value}}}{{^-last}},{{/-last}}
+    {{/enumVars}}
+{{/allowableValues}}
+}
+{{/isEnum}}
+{{^isEnum}}
+export interface {{classname}} {{#parent}}extends models.{{{parent}}} {{/parent}}{
+{{#additionalPropertiesType}}
+    [key: string]: {{{additionalPropertiesType}}}{{#hasVars}} | any{{/hasVars}};
+{{/additionalPropertiesType}}
+{{#vars}}
+{{#description}}
+    /**
+     * {{{description}}}
+     */
+{{/description}}
+    {{name}}{{^required}}?{{/required}}: {{#isEnum}}{{{classname}}}{{{datatypeWithEnum}}}{{/isEnum}}{{^isEnum}}{{{datatype}}}{{/isEnum}};
+{{/vars}}
+}
+{{#hasEnums}}
+// export namespace {{classname}} {
+{{#vars}}
+{{#isEnum}}
+    export enum {{classname}}{{enumName}} {
+    {{#allowableValues}}
+    {{#enumVars}}
+        {{{name}}} = <any> {{{value}}}{{^-last}},{{/-last}}
+    {{/enumVars}}
+    {{/allowableValues}}
+    }
+{{/isEnum}}
+{{/vars}}
+// }
+{{/hasEnums}}
+{{/isEnum}}
 {{/model}}
 {{/models}}
